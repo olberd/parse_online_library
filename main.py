@@ -69,6 +69,14 @@ def download_comments(soup):
     return comments
 
 
+def get_genres(soup):
+    genres_links = soup.find('span', class_='d_book').find_all('a')
+    genres = []
+    for genre in genres_links:
+        genres.append(genre.text)
+    return genres
+
+
 def main():
     logging.basicConfig(level=logging.ERROR)
     for book_id in range(1, 11):
@@ -89,6 +97,7 @@ def main():
         download_image(get_image_url(book_description_url, soup))
         print(parse_title_book(soup))
         print(download_comments(soup))
+        print(get_genres(soup))
 
 
 if __name__ == '__main__':
