@@ -60,6 +60,15 @@ def download_image(url, folder='images/'):
         file.write(response.content)
 
 
+def download_comments(soup):
+    texts = soup.find_all(class_='texts')
+    comments = []
+    for com in texts:
+        comment = com.find('span').text
+        comments.append(comment)
+    return comments
+
+
 def main():
     logging.basicConfig(level=logging.ERROR)
     for book_id in range(1, 11):
@@ -78,6 +87,8 @@ def main():
 
         download_txt(response.url, f'{book_id}. {parse_title_book(soup)}')
         download_image(get_image_url(book_description_url, soup))
+        print(parse_title_book(soup))
+        print(download_comments(soup))
 
 
 if __name__ == '__main__':
