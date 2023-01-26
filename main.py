@@ -1,3 +1,4 @@
+import argparse
 import os.path
 from urllib.parse import urljoin, unquote, urlsplit
 import requests
@@ -87,9 +88,9 @@ def parse_book_page(soup):
     return book_description
 
 
-def main():
+def main(start_id, end_id):
     logging.basicConfig(level=logging.ERROR)
-    for book_id in range(1, 11):
+    for book_id in range(start_id, end_id+1):
         payload = {'id': book_id}
         response = requests.get(BOOK_TXT_URL, params=payload, verify=False)
         response.raise_for_status()
@@ -111,4 +112,8 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description='Скачивает файлы с книгами с сайта tululu.org')
+    parser.add_argument('start_id', default=1, type=int)
+    parser.add_argument('end_id', default=10, type=int)
+    args = parser.parse_args()
+    main(args.start_id, args.end_id)
