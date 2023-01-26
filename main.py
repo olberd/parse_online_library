@@ -25,11 +25,12 @@ def get_book_page_soup(url):
     return soup
 
 
-def parse_title_book(soup):
+def parse_title_author_book(soup):
     title = soup.find('div', id='content').find('h1').text
     title = title.split('::')
     book_name = title[0].strip()
-    return book_name
+    book_author = title[1].strip()
+    return book_name, book_author
 
 
 def download_txt(url, filename, folder='books/'):
@@ -77,6 +78,15 @@ def get_genres(soup):
     return genres
 
 
+def parse_book_page(soup):
+    book_description = {
+        'name': parse_title_author_book(soup)[0],
+        'author': parse_title_author_book(soup)[1],
+        'genres': get_genres(soup),
+    }
+    return book_description
+
+
 def main():
     logging.basicConfig(level=logging.ERROR)
     for book_id in range(1, 11):
@@ -93,9 +103,9 @@ def main():
         response.raise_for_status()
         soup = BeautifulSoup(book_description_response.text, 'lxml')
 
-        download_txt(response.url, f'{book_id}. {parse_title_book(soup)}')
+        download_txt(response.url, f'{book_id}. {parse_title_author_book(soup)}')
         download_image(get_image_url(book_description_url, soup))
-        print(parse_title_book(soup))
+        print(parse_title_author_book(soup))
         print(download_comments(soup))
         print(get_genres(soup))
 
