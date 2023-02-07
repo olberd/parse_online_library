@@ -25,7 +25,7 @@ def download_txt(response, filename, folder='books/'):
     path.parent.mkdir(exist_ok=True, parents=True)
     with path.open('wb') as file:
         file.write(response.content)
-    return path
+    return f'{folder}{filename}'
 
 
 def get_image_url(book_description_url, soup):
@@ -43,6 +43,7 @@ def download_image(url, folder='images/'):
     path.parent.mkdir(exist_ok=True, parents=True)
     with path.open('wb') as file:
         file.write(response.content)
+    return f'{folder}{filename}'
 
 
 def parse_book_page(soup):
@@ -55,6 +56,8 @@ def parse_book_page(soup):
     book_description = {
         'title': title.strip(),
         'author': author.strip(),
+        'img_src': None,
+        'book_path': None,
         'comments': comments,
         'genres': genres,
     }
