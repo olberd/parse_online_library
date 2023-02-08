@@ -1,3 +1,4 @@
+import argparse
 import json
 import logging
 import time
@@ -24,7 +25,7 @@ def fetch_one_page_links(index):
 
 def fetch_pages_links(start_page=1, end_page=2):
     book_links = []
-    for index in range(start_page, end_page+1):
+    for index in range(start_page, end_page):
         book_links.extend(fetch_one_page_links(index))
     return book_links
 
@@ -32,7 +33,12 @@ def fetch_pages_links(start_page=1, end_page=2):
 def main():
     logging.basicConfig(level=logging.ERROR)
     books_descriptions = []
-    book_links = fetch_pages_links()
+
+    parser = argparse.ArgumentParser(description='Скачивает файлы с текстами и обложками книг с сайта tululu.org')
+    parser.add_argument('--start_page', default=1, type=int, help='с какой страницы начать загрузку')
+    parser.add_argument('--end_page', default=701, type=int, help='по какую страницу закончить загрузку')
+    args = parser.parse_args()
+    book_links = fetch_pages_links(args.start_page, args.end_page)
     for book_link in book_links:
         try:
             book_description_response = requests.get(book_link)
