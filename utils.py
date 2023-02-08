@@ -29,7 +29,7 @@ def download_txt(response, filename, folder='books/'):
 
 
 def get_image_url(book_description_url, soup):
-    image_url = soup.find('div', class_='bookimage').find('img')['src']
+    image_url = soup.select_one('.bookimage > a > img')['src']
     full_image_url = urljoin(book_description_url, image_url)
     return full_image_url
 
@@ -47,12 +47,12 @@ def download_image(url, folder='images/'):
 
 
 def parse_book_page(soup):
-    title = soup.find('div', id='content').find('h1').text
-    title, author = title.split('::')
-    genres_links = soup.find('span', class_='d_book').find_all('a')
+    header = soup.select_one('#content > h1').text
+    title, author = header.split('::')
+    genres_links = soup.select('.d_book > a')
     genres = [genre.text for genre in genres_links]
-    texts = soup.find_all(class_='texts')
-    comments = [com.find('span').text for com in texts]
+    texts = soup.select('.texts')
+    comments = [[com.select_one('span').text] for com in texts]
     book_description = {
         'title': title.strip(),
         'author': author.strip(),

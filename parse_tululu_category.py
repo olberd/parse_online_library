@@ -4,7 +4,7 @@ import time
 import requests
 from urllib.parse import urljoin, urlsplit, unquote
 from bs4 import BeautifulSoup
-from main import check_for_redirect, parse_book_page, download_txt, download_image, get_image_url
+from utils import check_for_redirect, parse_book_page, download_txt, download_image, get_image_url
 
 
 TULULU_MAIN_URL = 'https://tululu.org/'
@@ -17,8 +17,8 @@ def fetch_one_page_links(index):
     response = requests.get(url)
     response.raise_for_status()
     soup = BeautifulSoup(response.text, 'lxml')
-    book_blocks = soup.find(id='content').find_all('table')
-    book_links = [urljoin(TULULU_MAIN_URL, book.find('a')['href']) for book in book_blocks]
+    page_url = soup.select('.bookimage > a')
+    book_links = [urljoin(TULULU_MAIN_URL, url['href']) for url in page_url]
     return book_links
 
 
@@ -46,7 +46,6 @@ def main():
             response = requests.get(BOOK_TXT_URL, params=payload, verify=False)
             response.raise_for_status()
             check_for_redirect(response)
-
             book_path = download_txt(response, f'{book_description["title"]}')
             img_src = download_image(get_image_url(book_link, soup))
             book_description['img_src'] = img_src
@@ -67,3 +66,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
