@@ -5,7 +5,7 @@ import time
 import requests
 from urllib.parse import urljoin, urlsplit, unquote
 from bs4 import BeautifulSoup
-from utils import check_for_redirect, parse_book_page, download_txt, download_image, get_image_url
+from parse_tululu_books import check_for_redirect, parse_book_page, download_txt, download_image, get_image_url
 
 
 TULULU_MAIN_URL = 'https://tululu.org/'
@@ -33,10 +33,15 @@ def fetch_pages_links(start_page=1, end_page=2):
 def main():
     logging.basicConfig(level=logging.ERROR)
     books_descriptions = []
-
     parser = argparse.ArgumentParser(description='Скачивает файлы с текстами и обложками книг с сайта tululu.org')
-    parser.add_argument('--start_page', default=1, type=int, help='с какой страницы начать загрузку')
-    parser.add_argument('--end_page', default=701, type=int, help='по какую страницу закончить загрузку')
+    parser.add_argument('--start_page', default=1, type=int, help='С какой страницы начать загрузку')
+    parser.add_argument('--end_page', default=2, type=int, help='По какую страницу закончить загрузку')
+    parser.add_argument('--dest_folder', default='books/', type=str,
+                        help='Каталог для сохранения текстов, обложек, описания книг')
+    parser.add_argument('--skip_imgs', action='store_true', help='Не скачивать обложки')
+    parser.add_argument('--skip_txt', action='store_true', help='Не скачивать книги')
+    parser.add_argument('--json_path', default='books_descriptions.json', type=str,
+                        help='Каталог для файла с описанием книг')
     args = parser.parse_args()
     book_links = fetch_pages_links(args.start_page, args.end_page)
     for book_link in book_links:
@@ -52,10 +57,12 @@ def main():
             response = requests.get(BOOK_TXT_URL, params=payload, verify=False)
             response.raise_for_status()
             check_for_redirect(response)
-            book_path = download_txt(response, f'{book_description["title"]}')
-            img_src = download_image(get_image_url(book_link, soup))
-            book_description['img_src'] = img_src
-            book_description['book_path'] = book_path
+            if not args.skip_txt:
+                book_path = download_txt(response, f'{book_description["title"]}', args.dest_folder)
+                book_description['book_path'] = book_path
+            if not args.skip_imgs:
+                img_src = download_image(get_image_url(book_link, soup), args.dest_folder)
+                book_description['img_src'] = img_src
             print(book_description)
             books_descriptions.append(book_description)
         except requests.HTTPError:
@@ -65,9 +72,9 @@ def main():
             logging.error(f'Нет подключения к сайту tululu.org')
             time.sleep(15)
             continue
-    books_descriptions_json = json.dumps(books_descriptions, ensure_ascii=False)
-    with open('books_descriptions.json', 'w', encoding='utf8') as descr_file:
-        descr_file.write(books_descriptions_json)
+
+    with open(args.json_path, 'w', encoding='utf8') as descr_file:
+        json.dump(books_descriptions, descr_file, ensure_ascii=False)
 
 
 if __name__ == '__main__':

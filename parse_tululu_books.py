@@ -1,4 +1,5 @@
 import argparse
+import os
 import time
 from urllib.parse import urljoin, unquote, urlsplit
 import requests
@@ -21,11 +22,11 @@ def check_for_redirect(response):
 
 def download_txt(response, filename, folder='books/'):
     filename = f'{sanitize_filename(filename)}.txt'
-    path = Path(folder, filename)
-    path.parent.mkdir(exist_ok=True, parents=True)
-    with path.open('wb') as file:
+    os.makedirs(folder, exist_ok=True)
+    filepath = os.path.join(folder, filename)
+    with open(filepath, 'wb') as file:
         file.write(response.content)
-    return f'{folder}{filename}'
+    return filepath
 
 
 def get_image_url(book_description_url, soup):
@@ -39,11 +40,11 @@ def download_image(url, folder='images/'):
     response.raise_for_status()
     filename = unquote(urlsplit(url).path)
     filename = filename.split('/')[-1]
-    path = Path(folder, filename)
-    path.parent.mkdir(exist_ok=True, parents=True)
-    with path.open('wb') as file:
+    os.makedirs(folder, exist_ok=True)
+    filepath = os.path.join(folder, filename)
+    with open(filepath, 'wb') as file:
         file.write(response.content)
-    return f'{folder}{filename}'
+    return filepath
 
 
 def parse_book_page(soup):
@@ -67,8 +68,8 @@ def parse_book_page(soup):
 def main():
     logging.basicConfig(level=logging.ERROR)
     parser = argparse.ArgumentParser(description='Скачивает файлы с текстами и обложками книг с сайта tululu.org')
-    parser.add_argument('start_id', default=1, type=int, help='с какого номера id книги начать загрузку')
-    parser.add_argument('end_id', default=10, type=int, help='по какой id книги закончить загрузку')
+    parser.add_argument('--start_id', default=1, type=int, help='с какого номера id книги начать загрузку')
+    parser.add_argument('--end_id', default=10, type=int, help='по какой id книги закончить загрузку')
     args = parser.parse_args()
     for book_id in range(args.start_id, args.end_id + 1):
         try:
