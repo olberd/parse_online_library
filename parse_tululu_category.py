@@ -1,14 +1,14 @@
 import argparse
 import json
 import logging
+import sys
 import time
 import requests
 from urllib.parse import urljoin, urlsplit, unquote
 from bs4 import BeautifulSoup
-from parse_tululu_books import check_for_redirect, parse_book_page, download_txt, download_image, get_image_url
+from parse_tululu_books import check_for_redirect, parse_book_page, download_txt, download_image, get_image_url, \
+    TIME_OUT
 
-
-TULULU_MAIN_URL = 'https://tululu.org/'
 SCIENCE_FICTION_URL = 'https://tululu.org/l55/'
 BOOK_TXT_URL = 'https://tululu.org/txt.php'
 
@@ -17,16 +17,23 @@ def fetch_one_page_links(index):
     url = urljoin(SCIENCE_FICTION_URL, str(index))
     response = requests.get(url)
     response.raise_for_status()
+    check_for_redirect(response)
     soup = BeautifulSoup(response.text, 'lxml')
     page_url = soup.select('.bookimage > a')
-    book_links = [urljoin(TULULU_MAIN_URL, url['href']) for url in page_url]
+    book_links = [urljoin(SCIENCE_FICTION_URL, url['href']) for url in page_url]
     return book_links
 
 
 def fetch_pages_links(start_page=1, end_page=2):
     book_links = []
     for index in range(start_page, end_page):
-        book_links.extend(fetch_one_page_links(index))
+        try:
+            book_links.extend(fetch_one_page_links(index))
+        except requests.HTTPError:
+            print('Неверная ссылка', file=sys.stderr)
+        except requests.ConnectionError:
+            print('Нет подключения к интернет', file=sys.stderr)
+            time.sleep(TIME_OUT)
     return book_links
 
 
@@ -43,6 +50,7 @@ def main():
     parser.add_argument('--json_path', default='books_descriptions.json', type=str,
                         help='Каталог для файла с описанием книг')
     args = parser.parse_args()
+
     book_links = fetch_pages_links(args.start_page, args.end_page)
     for book_link in book_links:
         try:
@@ -51,12 +59,14 @@ def main():
             check_for_redirect(book_description_response)
             soup = BeautifulSoup(book_description_response.text, 'lxml')
             book_description = parse_book_page(soup)
+
             raw_book_id = unquote(urlsplit(book_link).path)
             book_id = raw_book_id.replace('b', '').replace('/', '')
             payload = {'id': book_id}
             response = requests.get(BOOK_TXT_URL, params=payload, verify=False)
             response.raise_for_status()
             check_for_redirect(response)
+
             if not args.skip_txt:
                 book_path = download_txt(response, f'{book_description["title"]}', args.dest_folder)
                 book_description['book_path'] = book_path
@@ -70,11 +80,11 @@ def main():
             continue
         except requests.ConnectionError:
             logging.error(f'Нет подключения к сайту tululu.org')
-            time.sleep(15)
+            time.sleep(TIME_OUT)
             continue
 
     with open(args.json_path, 'w', encoding='utf8') as descr_file:
-        json.dump(books_descriptions, descr_file, ensure_ascii=False)
+        json.dump(books_descriptions, descr_file, indent=4, ensure_ascii=False)
 
 
 if __name__ == '__main__':

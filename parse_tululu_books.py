@@ -5,14 +5,15 @@ from urllib.parse import urljoin, unquote, urlsplit
 import requests
 import logging
 import urllib3
-from pathlib import Path
 from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
+
 
 urllib3.disable_warnings()
 
 BOOK_TXT_URL = 'https://tululu.org/txt.php'
 BOOK_PAGE_URL = 'https://tululu.org/b'
+TIME_OUT = 15
 
 
 def check_for_redirect(response):
@@ -91,7 +92,7 @@ def main():
             continue
         except requests.ConnectionError:
             logging.error(f'Нет подключения к сайту tululu.org')
-            time.sleep(15)
+            time.sleep(TIME_OUT)
             continue
 
 
