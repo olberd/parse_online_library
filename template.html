@@ -19,7 +19,7 @@
         <div class="card mb-3" style="max-width: 540px;">
           <div class="row no-gutters">
             <div class="col-md-4">
-              <img src="{{ book.img_src }}" class="card-img" alt="обложка {{book.title}}">
+              <img src="../{{ book.img_src }}" class="card-img" alt="обложка {{book.title}}">
             </div>
             <div class="col-md-8">
               <div class="card-body">
@@ -28,7 +28,7 @@
                 <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional
                   content.
                   This content is a little bit longer.</p>
-                <a href="{{ book.book_path }}" target="_blank">Читать</a>
+                <a href="../{{ book.book_path }}" target="_blank">Читать</a>
                 <p class="card-text"><small class="text-muted">{{ book.genres | join(', ') }}</small></p>
               </div>
             </div>
