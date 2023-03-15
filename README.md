@@ -1,6 +1,9 @@
 # Парсер книг с сайта tululu.org  
 
-Скрипт загружает книги с сайта [tululu.org](https://tululu.org/).
+Скрипт загружает книги с сайта [tululu.org](https://tululu.org/). 
+
+Загруженные книги отображаются на сайте по адресу: 
+https://olberd.github.io/parse_online_library/pages/index1.html
 
 ### Как установить  
 
