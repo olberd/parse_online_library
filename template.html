@@ -52,11 +52,12 @@
                 <div class="card-body">
                   <h5 class="card-title">{{ book.title }}</h5>
                   <h6>{{ book.author }}</h6>
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional
-                    content.
-                    This content is a little bit longer.</p>
                   <a href="../{{ book.book_path }}" target="_blank">Читать</a>
-                  <p class="card-text"><small class="badge badge-primary">{{ book.genres | join(', ') }}</small></p>
+
+                  {% for genre in book.genres %}
+                    <p class="card-text"><small class="badge badge-primary">{{ genre }}</small></p>
+                  {% endfor %}
+
                 </div>
               </div>
             </div>
