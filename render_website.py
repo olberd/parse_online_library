@@ -35,8 +35,6 @@ def split_books_by_pages():
 def on_reload():
     split_books_by_pages()
 
-    print('Site rebuilt')
-
 
 on_reload()
 server = Server()
