@@ -1,44 +1,41 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="../static/bootstrap.min.css">
-  <link rel="icon" href="../static/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../static/bootstrap.min.css">
+    <link rel="icon" href="../static/favicon.ico" type="image/x-icon">
 
-  <title>Книги</title>
-</head>
-<body>
+    <title>Книги</title>
+  </head>
+  <body>
 
-<div class="container">
-  <nav class="mx-auto pt-3" aria-label="Page navigation example">
-    <ul class="pagination justify-content-center">
-      {% if current_page == 1 %}
-        <li class="page-item disabled"><a class="page-link" href="#">Назад</a></li>
-      {% else %}
-        <li class="page-item"><a class="page-link" href="index{{current_page - 1}}.html">Назад</a></li>
-      {% endif %}
-
-      {% for page in range(1, pages_amount) %}
-        {% if page != current_page %}
-          <li class="page-item"><a class="page-link" href="index{{page}}.html">{{ page }}</a></li>
+  <div class="container">
+    <nav class="mx-auto pt-3" aria-label="Page navigation example">
+      <ul class="pagination justify-content-center">
+        {% if current_page == 1 %}
+          <li class="page-item disabled"><a class="page-link" href="#">Назад</a></li>
         {% else %}
-          <li class="page-item active"><a class="page-link" href="index{{page}}.html">{{ page }}</a></li>
+          <li class="page-item"><a class="page-link" href="index{{current_page - 1}}.html">Назад</a></li>
         {% endif %}
-      {% endfor %}
 
-      {% if current_page == pages_amount - 1 %}
-        <li class="page-item disabled"><a class="page-link" href="#">Вперед</a></li>
-      {% else %}
-        <li class="page-item"><a class="page-link" href="index{{current_page + 1}}.html">Вперед</a></li>
-      {% endif %}
+        {% for page in range(1, pages_amount) %}
+          {% if page != current_page %}
+            <li class="page-item"><a class="page-link" href="index{{page}}.html">{{ page }}</a></li>
+          {% else %}
+            <li class="page-item active"><a class="page-link" href="index{{page}}.html">{{ page }}</a></li>
+          {% endif %}
+        {% endfor %}
 
+        {% if current_page == pages_amount - 1 %}
+          <li class="page-item disabled"><a class="page-link" href="#">Вперед</a></li>
+        {% else %}
+          <li class="page-item"><a class="page-link" href="index{{current_page + 1}}.html">Вперед</a></li>
+        {% endif %}
 
-    </ul>
-  </nav>
+      </ul>
+    </nav>
 
     <div class="row row-cols-2">
       {% for book in books %}
@@ -54,19 +51,17 @@
                   <h6>{{ book.author }}</h6>
                   <a href="../{{ book.book_path }}" target="_blank">Читать</a>
 
-                  {% for genre in book.genres %}
-                    <p class="card-text"><small class="badge badge-primary">{{ genre }}</small></p>
-                  {% endfor %}
+                    {% for genre in book.genres %}
+                      <p class="card-text"><small class="badge badge-primary">{{ genre }}</small></p>
+                    {% endfor %}
 
                 </div>
               </div>
             </div>
           </div>
         </div>
-
       {% endfor %}
     </div>
-</div>
-
-</body>
+  </div>
+  </body>
 </html>
