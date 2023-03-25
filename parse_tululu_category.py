@@ -43,7 +43,9 @@ def main():
     parser = argparse.ArgumentParser(description='Скачивает файлы с текстами и обложками книг с сайта tululu.org')
     parser.add_argument('--start_page', default=1, type=int, help='С какой страницы начать загрузку')
     parser.add_argument('--end_page', default=2, type=int, help='По какую страницу закончить загрузку')
-    parser.add_argument('--dest_folder', default='books/', type=str,
+    parser.add_argument('--books_folder', default='media/books/', type=str,
+                        help='Каталог для сохранения текстов, обложек, описания книг')
+    parser.add_argument('--images_folder', default='media/images/', type=str,
                         help='Каталог для сохранения текстов, обложек, описания книг')
     parser.add_argument('--skip_imgs', action='store_true', help='Не скачивать обложки')
     parser.add_argument('--skip_txt', action='store_true', help='Не скачивать книги')
@@ -68,10 +70,10 @@ def main():
             check_for_redirect(response)
 
             if not args.skip_txt:
-                book_path = download_txt(response, f'{book_description["title"]}', args.dest_folder)
+                book_path = download_txt(response, f'{book_description["title"]}', args.books_folder)
                 book_description['book_path'] = book_path
             if not args.skip_imgs:
-                img_src = download_image(get_image_url(book_link, soup), args.dest_folder)
+                img_src = download_image(get_image_url(book_link, soup), args.images_folder)
                 book_description['img_src'] = img_src
             print(book_description)
             books_descriptions.append(book_description)

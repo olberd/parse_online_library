@@ -13,12 +13,11 @@ with open('books_descriptions.json', 'r', encoding='utf8') as file:
 
 
 def split_books_by_pages():
-    os.makedirs('pages/', exist_ok=True)
     env = Environment(
         loader=FileSystemLoader('.'),
         autoescape=select_autoescape(['html'])
     )
-    template = env.get_template('template.html')
+    template = env.get_template('templates/template.html')
     books_descr_chunk = chunked(books_descr, NUM_BOOKS_ON_PAGE)
     pages_amount = math.ceil(len(books_descr) / NUM_BOOKS_ON_PAGE) + 1
     for idx_page, books_page in enumerate(books_descr_chunk, start=1):
@@ -27,7 +26,7 @@ def split_books_by_pages():
             pages_amount=pages_amount,
             current_page=idx_page,
         )
-
+        os.makedirs('pages/', exist_ok=True)
         with open(os.path.join('pages/', f'index{idx_page}.html'), 'w', encoding='utf8') as file:
             file.write(rendered_page)
 
@@ -35,8 +34,8 @@ def split_books_by_pages():
 if __name__ == '__main__':
     split_books_by_pages()
     server = Server()
-    server.watch('template.html', split_books_by_pages)
-    server.serve(root='.', )
+    server.watch('templates/template.html', split_books_by_pages)
+    server.serve(root='.')
 
 
 
