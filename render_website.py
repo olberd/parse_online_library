@@ -1,6 +1,9 @@
+import argparse
 import json
 import math
 import os
+import pathlib
+
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from livereload import Server
 from more_itertools import chunked
@@ -8,11 +11,15 @@ from more_itertools import chunked
 
 NUM_BOOKS_ON_PAGE = 10
 
-with open('books_descriptions.json', 'r', encoding='utf8') as file:
-    books_descr = json.load(file)
-
 
 def split_books_by_pages():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--json_path', default='.', type=pathlib.Path, help='Укажите путь к файлу json')
+    args = parser.parse_args()
+    path_to_json = os.path.join(args.json_path, 'books_descriptions.json')
+    with open(path_to_json, 'r', encoding='utf8') as file:
+        books_descr = json.load(file)
+
     env = Environment(
         loader=FileSystemLoader('.'),
         autoescape=select_autoescape(['html'])
@@ -36,7 +43,3 @@ if __name__ == '__main__':
     server = Server()
     server.watch('templates/template.html', split_books_by_pages)
     server.serve(root='.')
-
-
-
-
