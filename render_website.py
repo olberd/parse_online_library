@@ -17,16 +17,16 @@ def split_books_by_pages():
     args = parser.parse_args()
     path_to_json = os.path.join(args.json_path, 'books_descriptions.json')
     with open(path_to_json, 'r', encoding='utf8') as file:
-        books_descr = json.load(file)
+        book_descriptions = json.load(file)
 
     env = Environment(
         loader=FileSystemLoader('.'),
         autoescape=select_autoescape(['html'])
     )
     template = env.get_template('templates/template.html')
-    books_descr_chunk = chunked(books_descr, NUM_BOOKS_ON_PAGE)
-    pages_amount = math.ceil(len(books_descr) / NUM_BOOKS_ON_PAGE) + 1
-    for idx_page, books_page in enumerate(books_descr_chunk, start=1):
+    book_descr_chunks = chunked(book_descriptions, NUM_BOOKS_ON_PAGE)
+    pages_amount = math.ceil(len(book_descriptions) / NUM_BOOKS_ON_PAGE) + 1
+    for idx_page, books_page in enumerate(book_descr_chunks, start=1):
         rendered_page = template.render(
             books_descr=books_page,
             pages_amount=pages_amount,
