@@ -15,8 +15,7 @@ def split_books_by_pages():
     parser = argparse.ArgumentParser()
     parser.add_argument('--json_path', default='./books_descriptions.json', type=pathlib.Path, help='Укажите путь к файлу json')
     args = parser.parse_args()
-    path_to_json = args.json_path
-    with open(path_to_json, 'r', encoding='utf8') as file:
+    with open(args.json_path, 'r', encoding='utf8') as file:
         book_descriptions = json.load(file)
 
     env = Environment(
