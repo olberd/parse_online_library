@@ -65,9 +65,9 @@ parse_tululu_category.py [-h] [--start_page] [--end_page] [--dest_folder] [--jso
 python render_website.py
 ```
 Перейти по адресу 
-```
+
 http://127.0.0.1:5500/pages/index1.html
-```
+
 ### Как запустить оффлайн-библиотеку
 Открыть любой файл со страницей в каталоге `pages`, например `index1.html`
 
